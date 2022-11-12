@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
-# traps signals and creates a file containing its pid
-i=0
-echo $BASHPID > /var/run/holbertonscript.pid
-trap 'echo "I hate the kill command"; rm /var/run/holbertonscript.pid; exit 0;' SIGTERM
-trap 'echo "Y U no love me?!"' SIGINT
-trap 'rm /var/run/holbertonscript.pid; exit 0;' SIGQUIT
-while [ $i ]; do
+# Infinite loop creates file with pid, catches signal, and removes file/exits:
+# Ctrl-C (SIGINT), kill (SIGTERM), and ctrl-| (SIGQUIT)
+
+rmfile_n_exit()
+{
+    rm -f /var/run/holbertonscript.pid;
+    exit
+}
+trap "echo 'Y U no love me?!'" SIGINT
+trap "echo 'I hate the kill command'; rmfile_n_exit" SIGTERM
+trap "echo 'I hate the kill command'; rmfile_n_exit" SIGQUIT
+
+
+echo $$ >> /var/run/holbertonscript.pid
+while (true)
+do
     echo 'To infinity and beyond'
     sleep 2
-done;
+done
