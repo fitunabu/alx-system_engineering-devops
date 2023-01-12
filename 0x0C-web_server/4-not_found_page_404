@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# installs nginx and changes default html file
+apt-get -y update
+apt-get -y install nginx
+echo 'Hello World!' > /var/www/html/index.html
+# configure /redirect_me to another page
+sed -i "/server_name_;/ a \\\trewrite ^/redirect_me$ https://ansi.org permanent;" /etc/nginx/sites-available/default
+echo "Ceci n'est pas une page" > /var/www/html/c_404.html
+sed -i "/redirect_me/ a\\\terror_page 404 /c_404.html;" /etc/nginx/sites-available/default
+service nginx start
