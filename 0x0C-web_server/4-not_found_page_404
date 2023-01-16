@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
-# installs nginx and changes default html file
+# Configure Nginx server to give error 404 page
 apt-get -y update
 apt-get -y install nginx
-echo 'Hello World!' > /var/www/html/index.html
-# configure /redirect_me to another page
-sed -i "/server_name_;/ a \\\trewrite ^/redirect_me$ https://ansi.org permanent;" /etc/nginx/sites-available/default
-echo "Ceci n'est pas une page" > /var/www/html/c_404.html
-sed -i "/redirect_me/ a\\\terror_page 404 /c_404.html;" /etc/nginx/sites-available/default
-service nginx start
+# 1 Return a page Hello World!
+echo "Hello World!" | tee /var/www/html/index.html
+# 2 redirection page
+TEXT="location /redirect_me {\\n return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;\\n}\\n"
+sudo sed -i "42i $TEXT" /etc/nginx/sites-available/default
+# 3 HTTP 404 error page inclu Ceci n'est pas une page
+echo "Ceci n'est pas une page" | tee /var/www/html/404.html
+CUSTOM="error_page 404 /404.html;\nlocation = /404.html {\nroot /var/www/html;\ninternal;\n}"
+sudo sed -i "/server_name _;/a $CUSTOM" /etc/nginx/sites-available/default
+service nginx restart
