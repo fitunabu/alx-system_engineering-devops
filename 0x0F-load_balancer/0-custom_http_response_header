@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# configures a new ubuntu server as follows:
+#	- apt-get update
+# 	- install nginx
+#	- set X-Served-By header
+#	- restart server
+apt-get -y update
+apt-get -y install nginx
+sed -i "/server_name _;/ a\\\tadd_header X-Served-By \"\$HOSTNAME\";" /etc/nginx/sites-available/default
+service nginx restart
