@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# installs and configures HAproxy on a server as follows:
+#	- apt-get update
+#	- apt-get install HAproxy
+#	- configure frontend
+#	- configre backend
+#	- restart service
+sudo apt-get -y update
+sudo apt-get -y install haproxy
+echo -e "frontend firstbalance\n\tmode http\n\tbind *:80\n\tdefault_backend web_servers" >> /etc/haproxy/haproxy.cfg
+echo -e "backend web_servers\n\tmode http\n\tbalance roundrobin\n\tserver s1 34.139.26.238:80\n\tserver s2 18.207.4.175:80" >> /etc/haproxy/haproxy.cfg
+echo -e "ENABLED=1" >> /etc/default/haproxy
+sudo service haproxy restart
